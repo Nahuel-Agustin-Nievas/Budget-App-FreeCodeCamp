@@ -44,6 +44,50 @@ class Category:
 
         output = title + items + "Total: " + str(total)
         return output
+
+
+    def spent(self):
+        b = 0
+        for t in self.ledger:
+            amount = t["amount"]
+            if amount < 0:
+                b += amount
+
+        return -b
+
+
+def create_spend_chart(categories):
+    spending = [c.spent() for c in categories]
+    total = sum(spending)
+    percentages = [s * 100 / total for s in spending]
+    ss = ["Percentage spent by category"]
+    for i in range(0, 11):
+      level = 10 * (10 - i)
+      s = '{:>3}| '.format(level)
+      for p in percentages:
+        if p >= level:
+            s += "o  "
+        else:
+            s += "   "
+      ss.append(s)
+    padding = " " * 4
+    ss.append(padding + "-" * 3 * len(spending) + "-")
+
+    names = [c.name for c in categories]
+    n = max(map(len, names))
+    for i in range(0, n):
+        s = padding
+        for name in names:
+          s += " "
+          s += name[i] if len(name) > i else " "
+          s += " " 
+
+        
+        ss.append(s + " ")
+
+    return "\n".join(ss)
+
+        
  
 food = Category("Food")
 food.deposit(1000, "initial deposit")
